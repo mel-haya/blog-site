@@ -1,0 +1,17 @@
+$primary: #48BF91;
+$secondary: #F7F7F7;
+$carousel-indicator-transition:all 1s ease;
+
+
+
+
+
+@import "bootstrap/scss/bootstrap";
+
+body{
+    background-color: $gray-800;
+}
+
+a{
+    text-decoration: none;
+}
