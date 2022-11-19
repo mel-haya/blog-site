@@ -6,22 +6,22 @@
             <input type="text" class="form-control fs-5 mb-3" id="caption" v-model="caption" placeholder="Caption">
         </div>
         <div id="content">
-            <contentItem v-for="item in content" :key="item.id" :type="item.type" @deleteItem="deleteContent(item)"/>
+            <contentItem v-for="item in content" :key="item.id" :itemId="item.id" :type="item.type" @deleteItem="deleteContent(item)"/>
         </div>
         <div class="row justify-content-start gap-2 mt-3">
-            <div class="col-3" id="addContent" @click="addContent('text')">
+            <div class="col-8 col-md-3" id="addContent" @click="addContent('text')">
                 <fa icon="align-left" /> new text
             </div>
-            <div class="col-3" id="addContent" @click="addContent('image')">
+            <div class="col-8 col-md-3" id="addContent" @click="addContent('image')">
                 <fa icon="image" /> new image
             </div>
-            <div class="col-3" id="addContent" @click="addContent('video')">
+            <div class="col-8 col-md-3" id="addContent" @click="addContent('video')">
                 <fa icon="video" /> new video
             </div>
         </div>
         <div class="row justify-content-start mt-3 gap-2">
-            <button class="btn bg-success p-2 col-1 text-secondary">Save</button>
-            <button class="btn bg-danger p-2 col-1 text-secondary">back</button>
+            <button class="btn bg-success p-2 col-5 col-md-2 text-secondary">Save</button>
+            <button class="btn bg-danger p-2 col-5 col-md-2 text-secondary">back</button>
         </div>
     </div>
 </template>
