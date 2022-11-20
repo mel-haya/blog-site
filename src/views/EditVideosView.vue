@@ -2,6 +2,7 @@
     <div class="row justify-content-center p-3">
         <h1 class="text-secondary">Edit videos</h1>
         <videoEditor class="col-8" v-for="item in videos" :key="item.id" :item="item" @update="updateItem"/>
+        <div v-if="videos.length === 0" class="text-muted"> No videos to edit...</div>
         <button class="btn col-5 bg-success text-secondary" @click="publish">publish</button>
     </div>
 </template>

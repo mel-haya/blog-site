@@ -17,7 +17,9 @@ export const store = new Vuex.Store({
   actions: {
     startListner(context) {
      context.state.unsubscribe = onSnapshot( postsCollection, (snapshot) => {
-        context.state.posts = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+        context.state.posts = snapshot.docs
+		.filter(doc => doc.id !== 'draft')
+		.map(doc => ({id: doc.id, ...doc.data()}));
       })
     },
     stopListner(context) {

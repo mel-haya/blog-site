@@ -32,7 +32,7 @@
 <script>
     import { onMounted, ref } from 'vue';
     import contentItem from '@/components/Content-item.vue';
-    import { uploadFile, addPost, editPost } from '@/firebase';
+    import { uploadFile, addPost, editPost , getDraft} from '@/firebase';
     import router from '@/router';
 
     export default {
@@ -47,6 +47,10 @@
                 this.caption = post.caption;
                 this.items = post.contentItems;
                 this.postId = post.id;
+            }
+            let draft = await getDraft();
+            if(draft){
+                this.$router.push('/post/edit-videos');
             }
         }
         ,setup(props, context) {
