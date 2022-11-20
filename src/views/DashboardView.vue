@@ -14,8 +14,8 @@
             </thead>
             <tbody class="text-secondary">
                 <tr v-for="post in posts" :key="post.id">
-                    <td>{{post.title}}</td>
-                    <td>{{post.created_at}}</td>
+                    <td><router-link :to="`/post/${post.id}`" >{{post.title}}</router-link></td>
+                    <td>{{post.createdAt}}</td>
                     <td>
                         <button class="btn btn-warning me-2" @click="editPost(post.id)">Edit</button>
                         <button class="btn btn-danger" @click="deletePost(post.id)">Delete</button>
@@ -39,7 +39,12 @@
         },
         computed:{
             posts(){
-                return this.$store.state.posts
+                return this.$store.state.posts.map((post) => {
+                    return {
+                        ...post,
+                        createdAt: this.toDate(post.createdAt)
+                    }
+                });
             }
         },
         methods: {
@@ -48,6 +53,9 @@
             },
             async deletePost(id){
                 await deletePost(id);
+            },
+            toDate(timestamp){
+                return new Date(timestamp.seconds * 1000);
             }
         }
     }

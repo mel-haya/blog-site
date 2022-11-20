@@ -12,9 +12,6 @@ export default {
   name: "App",
   components: {
     NavBar,
-  },
-  mounted: () => {
-    console.log("App mounted");
   }
 };
 

@@ -10,7 +10,8 @@ const router = new VueRouter({
     {
       path: "/",
       name: "home",
-      component: () => import("../views/HomeView.vue"),
+      redirect: "/dashboard"
+      // component: () => import("../views/HomeView.vue"),
     },
     {
       path: "/dashboard",
@@ -21,6 +22,16 @@ const router = new VueRouter({
       path: "/post/create",
       name: "create-post",
       component: () => import("../views/CreatePostView.vue"),
+    },
+    {
+      path: "/post/edit/:id",
+      name: "edit-post",
+      component: () => import("../views/CreatePostView.vue"),
+    }, 
+    {
+      path: "/post/edit-videos",
+      name: "edit-videos",
+      component: () => import("../views/EditVideosView.vue"),
     },
     {
       path: "/post/:id",

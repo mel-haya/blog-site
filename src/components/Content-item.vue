@@ -1,25 +1,26 @@
 <template>
     <div class="mb-3 card row py-4 position-relative">
         <div class = "text-end position-absolute"> <fa icon="trash" id="delete-item" @click="deleteItem"/> </div>
-        <div v-if="type === 'text'" class="col-10 p-2" id="text-content" placeholder="text" contenteditable>
+        <div v-if="item.type === 'text'" class="col-10 p-2" id="text-content" @focusout="onInput" contenteditable>
+            {{src}}
         </div>   
-        <div v-else-if="type === 'image'" class="col-10">
+        <div v-else-if="item.type === 'image'" class="col-10">
             <img v-if="src" :src="src" alt="" class="img-thumbnail"/>
-            <label v-else :for="`image-input-${itemId}`" class="p-4 fs-3 text-center text-muted">
+            <label v-else :for="`image-input-${item.id}`" class="p-4 fs-3 text-center text-muted">
                 <fa icon="images"/> Choose image
             </label>
-            <input :id="`image-input-${itemId}`" accept="image/*" class="d-none" type="file" @change="changeImage">
+            <input :id="`image-input-${item.id}`" accept="image/*" class="d-none" type="file" @change="changeImage">
             
         </div>
 
-        <div v-else-if="type === 'video'" class="col-10">
+        <div v-else-if="item.type === 'video'" class="col-10">
             <video v-if="src" width="640" height="480" controls>
                 <source :src="src">
             </video>
-            <label v-else :for="`video-input-${itemId}`" class="p-4 fs-3 text-center text-muted">
+            <label v-else :for="`video-input-${item.id}`" class="p-4 fs-3 text-center text-muted">
                 <fa icon="images"/> Choose video
             </label>
-            <input :id="`video-input-${itemId}`" accept="video/mp4,video/x-m4v,video/*" @change="changeImage" type="file">
+            <input :id="`video-input-${item.id}`" accept="video/mp4,video/x-m4v,video/*" class="d-none" @change="changeImage" type="file">
         </div>
     </div>
 </template>
@@ -27,8 +28,13 @@
 <script>
     export default {
         name: 'content-item',
-        props:['type','itemId'],
-        emits:['deleteItem'],
+        props:['item'],
+        emits:['deleteItem','input'],
+        mounted: function(){
+            if(this.item.content){
+                this.src = this.item.content;
+            }
+        },
         data: function() {
             return {
                 src: ""
@@ -41,6 +47,14 @@
             changeImage(e)
             {
                 this.src = URL.createObjectURL(e.target.files[0]);
+                let payload = this.item;
+                payload.content = e.target.files[0];
+                this.$emit('input', this.item.id, payload);
+            },
+            onInput(e) {
+                let payload = this.item;
+                payload.content = e.target.innerText;
+                this.$emit('input', this.item.id, payload);
             }
 
         }

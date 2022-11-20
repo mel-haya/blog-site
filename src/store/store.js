@@ -20,8 +20,13 @@ export const store = new Vuex.Store({
         context.state.posts = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
       })
     },
-    stopPostsListner(context) {
+    stopListner(context) {
         context.state.unsubscribe();
       },
+   },
+   getters: {
+	getPostById: (state) => (id) => {
+    	return state.posts.find(post => post.id === id)
+	}
    }
 })

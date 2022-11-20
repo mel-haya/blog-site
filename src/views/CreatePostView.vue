@@ -6,9 +6,9 @@
             <input type="text" class="form-control fs-5 mb-3" id="caption" v-model="caption" placeholder="Caption">
         </div>
         <div id="content">
-            <contentItem v-for="item in content" :key="item.id" :itemId="item.id" :type="item.type" @deleteItem="deleteContent(item)"/>
+            <contentItem v-for="item in items" :key="item.id" :item="item" @input="updateContent"  @deleteItem="deleteContent(item)"/>
         </div>
-        <div class="row justify-content-start gap-2 mt-3">
+        <div class="row justify-content-start gap-2 mt-3" v-if="postId === ''">
             <div class="col-8 col-md-3" id="addContent" @click="addContent('text')">
                 <fa icon="align-left" /> new text
             </div>
@@ -19,45 +19,95 @@
                 <fa icon="video" /> new video
             </div>
         </div>
+        <div v-if="loading" class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
         <div class="row justify-content-start mt-3 gap-2">
-            <button class="btn bg-success p-2 col-5 col-md-2 text-secondary">Save</button>
+            <button class="btn bg-success p-2 col-5 col-md-2 text-secondary" @click="submit">Save</button>
             <button class="btn bg-danger p-2 col-5 col-md-2 text-secondary">back</button>
         </div>
     </div>
 </template>
 
 <script>
-    import { ref } from 'vue';
+    import { onMounted, ref } from 'vue';
     import contentItem from '@/components/Content-item.vue';
+    import { uploadFile, addPost, editPost } from '@/firebase';
+    import router from '@/router';
 
     export default {
         name: 'CreatePostView',
         components: {
             contentItem
         },
-        setup(){
+        mounted: async function(){
+            if(this.$route.params.id){
+                let post = await this.$store.getters.getPostById(this.$route.params.id);
+                this.title = post.title;
+                this.caption = post.caption;
+                this.items = post.contentItems;
+                this.postId = post.id;
+            }
+        }
+        ,setup(props, context) {
             const title = ref('');
             const caption = ref('');
-            const content = ref([])
-            let id = ref(0);
+            const items = ref([])
+            const postId = ref("");
+            const id = ref(0);
+            let loading = ref(false); 
 
             function addContent(type) {
-                content.value.push({id: id.value, type: type});
+                items.value.push({id: id.value, type: type});
                 id.value++;
             }
 
             function deleteContent(item) {
-                console.log(item);
-                content.value = content.value.filter((contentItem) => contentItem.id !== item.id);
+                items.value = items.value.filter((contentItem) => contentItem.id !== item.id);
             }
 
-            return {title, caption, content, id, addContent, deleteContent}
-        },
-        mounted: function() {
-            console.log('CreatePostView mounted');
-        }
-        
-        
+            function updateContent(id, value){
+                items.value = items.value.map((contentItem) => {
+                    if(contentItem.id === id) {
+                        contentItem = value;
+                    }
+                    return contentItem;
+                });
+            }
+
+            async function submit() {
+                try{
+                    if(loading.value) return;
+                    loading.value = true;
+                    let post = {
+                        title: title.value,
+                        caption: caption.value,
+                        'contentItems': items.value
+                    }
+                    if(postId.value !== ""){
+                        console.log(postId.value);
+                        await editPost(postId.value, post);
+                        router.push('/dashboard');
+                        loading.value = false;
+                        return;
+                    }
+                    for(let i = 0; i < post.contentItems.length; i++) {
+                        if((post.contentItems[i].type === 'image' || post.contentItems[i].type === 'video') && post.contentItems[i].content) {
+                            let file = post.contentItems[i].content;
+                            let url = await uploadFile(file);
+                            post.contentItems[i].content = url;
+                        }
+                    }
+                    await addPost(post);
+                    loading.value = false;
+                    router.push('/post/edit-videos');
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
+            return {title,postId, loading,caption, items, id, addContent, deleteContent, updateContent, submit}
+        }    
     }
 </script>
 
