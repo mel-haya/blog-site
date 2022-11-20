@@ -10,6 +10,7 @@
 
 <script>
     import DisplayItem from '@/components/DisplayItem.vue';
+    import { getPost } from '@/firebase';
     export default {
         name: 'ShowPostView',
         components: {
@@ -25,7 +26,7 @@
             }
         },
         mounted: async function() {
-            this.post = await this.$store.getters.getPostById(this.$route.params.id);
+            this.post = await getPost(this.$route.params.id);
         },
     }
 </script>
