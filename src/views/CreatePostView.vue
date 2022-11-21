@@ -8,7 +8,7 @@
         <div id="content">
             <contentItem v-for="item in items" :key="item.id" :item="item" @input="updateContent"  @deleteItem="deleteContent(item)"/>
         </div>
-        <div class="row justify-content-start gap-2 mt-3" v-if="postId === ''">
+        <div class="row justify-content-start gap-2 mt-3">
             <div class="col-8 col-md-3" id="addContent" @click="addContent('text')">
                 <fa icon="align-left" /> new text
             </div>
@@ -34,7 +34,6 @@
     import { onMounted, ref } from 'vue';
     import contentItem from '@/components/Content-item.vue';
     import { uploadFile, addPost, editPost , getDraft} from '@/firebase';
-    // import router from '@/router';
     import {useRouter} from 'vue-router/composables'
 
     export default {
@@ -91,23 +90,25 @@
                         caption: caption.value,
                         'contentItems': items.value
                     }
-                    if(postId.value !== ""){
-                        console.log(postId.value);
-                        await editPost(postId.value, post);
-                        router.push('/dashboard');
-                        loading.value = false;
-                        return;
-                    }
+                    
                     for(let i = 0; i < post.contentItems.length; i++) {
-                        if((post.contentItems[i].type === 'image' || post.contentItems[i].type === 'video') && post.contentItems[i].content) {
+                        if((post.contentItems[i].content && typeof post.contentItems[i].content !== 'string' )){
                             let file = post.contentItems[i].content;
                             let url = await uploadFile(file);
                             post.contentItems[i].content = url;
                         }
                     }
-                    await addPost(post);
-                    loading.value = false;
-                    router.push('/post/edit-videos');
+
+                    if(postId.value !== ""){
+                        await editPost(postId.value, post);
+                        router.push('/dashboard');
+                    }
+                    else{
+                        await addPost(post);
+                        router.push('/post/edit-videos');
+                    }
+
+
                 } catch (error) {
                     console.log(error);
                 }
