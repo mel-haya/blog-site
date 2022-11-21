@@ -24,7 +24,8 @@
         </div>
         <div class="row justify-content-start mt-3 gap-2">
             <button class="btn bg-success p-2 col-5 col-md-2 text-secondary" @click="submit">Save</button>
-            <button class="btn bg-danger p-2 col-5 col-md-2 text-secondary">back</button>
+            <router-link to="/dashboard" class="btn bg-danger p-2 col-5 col-md-2 text-secondary">back</router-link>
+            
         </div>
     </div>
 </template>
@@ -33,7 +34,8 @@
     import { onMounted, ref } from 'vue';
     import contentItem from '@/components/Content-item.vue';
     import { uploadFile, addPost, editPost , getDraft} from '@/firebase';
-    import router from '@/router';
+    // import router from '@/router';
+    import {useRouter} from 'vue-router/composables'
 
     export default {
         name: 'CreatePostView',
@@ -59,7 +61,8 @@
             const items = ref([])
             const postId = ref("");
             const id = ref(0);
-            let loading = ref(false); 
+            let loading = ref(false);
+            const router = useRouter();
 
             function addContent(type) {
                 items.value.push({id: id.value, type: type});
