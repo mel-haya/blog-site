@@ -8,21 +8,22 @@
 </template>
 
 <script>
-    import { getDraft, publishDraft } from '@/firebase';
+    import { publishDraft } from '@/firebase';
     import videoEditor from '@/components/videoEditor.vue';
+    import { uploadFile } from '@/firebase';
+
+
     export default {
         name: 'editPostView',
         data() {
             return {
-                draft: {
-                    title: '',
-                    caption: '',
-                    contentItems: []
-                }
+                draft: this.$store.state.draft,
+                popup: false
             }
         },
-        mounted: async function () {
-            this.draft = await getDraft()
+        mounted: function() {
+            if(this.$route.query.r)
+                this.popup= true
         },
         components: {
             videoEditor
@@ -34,6 +35,7 @@
         },
         methods: {
             updateItem(item) {
+                console.log(item)
                 this.draft.contentItems = this.draft.contentItems.map((contentItem) => {
                     if(contentItem.id === item.id) {
                         contentItem = item;
@@ -41,8 +43,16 @@
                     return contentItem;
                 });
             },
-            publish() {
+            async publish() {
+                for(let i = 0; i < this.draft.contentItems.length; i++) {
+                    if((this.draft.contentItems[i].content && typeof this.draft.contentItems[i].content !== 'string' )){
+                        let file = this.draft.contentItems[i].content;
+                        let url = await uploadFile(file);
+                        this.draft.contentItems[i].content = url;
+                    }
+                }
                 publishDraft(this.draft);
+                this.$store.commit('emptyDraft');
                 this.$router.push('/dashboard');
             }
         }

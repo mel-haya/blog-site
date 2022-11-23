@@ -58,8 +58,7 @@ export const getDraft = async() => {
 }
 
 export const publishDraft = async(post) => {
-  await deletePost("draft");
-  await addDoc(collection(db,"posts"), post);
+  await addDoc(postsCollection, {...post, createdAt: serverTimestamp()});
 }
 
 export const editPost = async (id,post) => {

@@ -2,7 +2,7 @@
   "name": "blog-site",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 8080",
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
@@ -28,6 +28,7 @@
     "prettier": "^2.5.1",
     "sass": "^1.56.1",
     "terser": "^5.14.2",
-    "vite": "^3.0.2"
+    "vite": "^3.0.2",
+    "vite-plugin-cross-origin-isolation": "^0.1.6"
   }
 }

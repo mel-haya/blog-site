@@ -1,7 +1,7 @@
 <template>
     <div class="mb-3 card row py-4">
         <video v-if="item" width="640" height="480" controls ref="video">
-            <source :src="item.content">
+            <source :src="src">
         </video>
         <div>video duration is : {{duration}} seconds</div>
         <div class="row mt-3">
@@ -18,36 +18,35 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
     export default {
         name: 'videoEditor',
         props: ['item'],
-        setup(props, context) {
-            const video = ref(null);
-            const start = ref(0);
-            const end = ref(0);
-            const duration = ref(0)
-            onMounted(function() {
-                video.value.addEventListener('loadedmetadata', function(){
-                    duration.value = video.value.duration;
-                    end.value = video.value.duration;
-                    update()
-                });
-            });
-
-            function update(){
-                context.emit("update", {...props.item, start: start.value, end: end.value});
-            }
-
+        emits: ['trim'],
+        data: function() {
             return {
-                video,
-                start,
-                end,
-                duration,
-                update
+                start: 0,
+                end: 0,
+                duration: 0,
+                loading: 'trim'
             }
         },
-
+        computed: {
+            src() {
+                return URL.createObjectURL(this.item.content);
+            }
+        },
+        mounted: function() {
+            this.$refs.video.addEventListener('loadedmetadata', () => {
+                this.duration = this.$refs.video.duration;
+                this.end = this.duration;
+                this.update()
+            });
+        },
+        methods:{
+            update(){
+                this.$emit("update", {...this.item, start: this.start, end: this.end});
+            }
+        },
         watch: {
             start: function (val) {
                 val = parseInt(val)

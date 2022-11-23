@@ -3,6 +3,7 @@
         <h1 class="text-light">Create a new post</h1>
         <div class="row form-group mt-4">
             <input type="text" class="form-control fs-1 mb-3" id="title" v-model="title" placeholder="Title">
+            <small class="text-danger" v-if="error">Title can't be empty</small>
             <input type="text" class="form-control fs-5 mb-3" id="caption" v-model="caption" placeholder="Caption">
         </div>
         <div id="content">
@@ -19,11 +20,14 @@
                 <fa icon="video" /> new video
             </div>
         </div>
-        <div v-if="loading" class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
+        <div v-if="loading" class="mt-2">
+            <div  class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div> 
+            <small class="text-secondary">uploading files ...</small>
         </div>
         <div class="row justify-content-start mt-3 gap-2">
-            <button class="btn bg-success p-2 col-5 col-md-2 text-secondary" @click="submit">Save</button>
+            <button class="btn bg-success p-2 col-5 col-md-2 text-secondary" @click.once="submit">Save</button>
             <router-link to="/dashboard" class="btn bg-danger p-2 col-5 col-md-2 text-secondary">back</router-link>
             
         </div>
@@ -34,7 +38,7 @@
     import { onMounted, ref } from 'vue';
     import contentItem from '@/components/Content-item.vue';
     import { uploadFile, addPost, editPost , getDraft} from '@/firebase';
-    import {useRouter} from 'vue-router/composables'
+    import { v4 } from 'uuid'
 
     export default {
         name: 'CreatePostView',
@@ -47,50 +51,58 @@
                 this.title = post.title;
                 this.caption = post.caption;
                 this.items = post.contentItems;
-                this.postId = post.id;
             }
-            let draft = await getDraft();
+            let draft = this.$store.getters.checkDraft;
             if(draft){
-                this.$router.push('/post/edit-videos');
+                this.$router.push('/post/edit-videos?r=true');
             }
-        }
-        ,setup(props, context) {
-            const title = ref('');
-            const caption = ref('');
-            const items = ref([])
-            const postId = ref("");
-            const id = ref(0);
-            let loading = ref(false);
-            const router = useRouter();
-
-            function addContent(type) {
-                items.value.push({id: id.value, type: type});
-                id.value++;
+        },
+        data(){
+            return {
+                title: '',
+                caption: '',
+                items: [],
+                loading: false,
+                error: false
             }
-
-            function deleteContent(item) {
-                items.value = items.value.filter((contentItem) => contentItem.id !== item.id);
-            }
-
-            function updateContent(id, value){
-                items.value = items.value.map((contentItem) => {
-                    if(contentItem.id === id) {
-                        contentItem = value;
+        },
+        methods: {
+            addContent(type){
+                this.items.push({
+                    id: v4(),
+                    type: type,
+                    content: ''
+                });
+            },
+            updateContent(item){
+                this.items = this.items.map((contentItem) => {
+                    if(contentItem.id === item.id) {
+                        contentItem = item;
                     }
                     return contentItem;
                 });
-            }
-
-            async function submit() {
+            },
+            deleteContent(item){
+                this.items = this.items.filter((contentItem) => contentItem.id !== item.id);
+            },
+            async submit(){
                 try{
-                    if(loading.value) return;
-                    loading.value = true;
-                    let post = {
-                        title: title.value,
-                        caption: caption.value,
-                        'contentItems': items.value
+                    console.log(this.title)
+                    if(this.title === ''){
+                        this.error = true;
+                        return;
                     }
-                    
+                    this.loading = true;
+                    let post = {
+                        title: this.title,
+                        caption: this.caption,
+                        'contentItems': this.items
+                    }
+                    if(!this.$route.params.id){
+                        this.$store.commit('updateDraft', post);
+                        this.$router.push('/post/edit-videos');
+                        return;
+                    }
                     for(let i = 0; i < post.contentItems.length; i++) {
                         if((post.contentItems[i].content && typeof post.contentItems[i].content !== 'string' )){
                             let file = post.contentItems[i].content;
@@ -98,24 +110,17 @@
                             post.contentItems[i].content = url;
                         }
                     }
-
-                    if(postId.value !== ""){
-                        await editPost(postId.value, post);
-                        router.push('/dashboard');
-                    }
-                    else{
-                        await addPost(post);
-                        router.push('/post/edit-videos');
-                    }
-
-
-                } catch (error) {
-                    console.log(error);
+                    await editPost(this.$route.params.id, post);
+                    this.$router.push('/dashboard');  
+                }
+                catch(err){
+                    console.log(err);
+                }
+                finally{
+                    this.loading = false;
                 }
             }
-
-            return {title,postId, loading,caption, items, id, addContent, deleteContent, updateContent, submit}
-        }    
+        }  
     }
 </script>
 

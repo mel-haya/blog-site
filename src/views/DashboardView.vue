@@ -24,7 +24,8 @@
             </tbody>
         </table>
         <div id="del-confirm-container" v-if="deleteConfirm">
-            <div id="del-confirm-body"  class="p-2 text-secondary bg-dark">
+            <div id="del-confirm-body"  class="px-4 py-3  text-secondary bg-dark">
+                <h2 class="text-danger">Delete post</h2>
                 <p>This will delete this post.</p>   
                 <div class="d-flex justify-content-end gap-2">
                     <button class="btn btn-danger" @click="deletePost(deleteConfirm)">Delete</button>
@@ -66,13 +67,13 @@
                 this.deleteConfirm = ''
             },
             toDate(timestamp){
-                return new Date(timestamp.seconds * 1000);
+                if(timestamp)
+                    return new Date(timestamp.seconds * 1000);
             }
         },
-        setup(){
-            const deleteConfirm = ref(null);
+        data(){
             return {
-                deleteConfirm
+                deleteConfirm: ''
             }
         }
     }
@@ -93,10 +94,9 @@
     top:50%;
     left:50%;
     transform:translate(-50%, -50%);
-    width:300px;
-    height:100px;
     border-radius:10px;
-    padding:10px;
+    padding:25px;
+    border:  5px solid #333;
 }
 
 </style>

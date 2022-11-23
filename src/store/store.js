@@ -11,6 +11,11 @@ export const store = new Vuex.Store({
   state () {
     return {
       posts: [],
+	  draft: {
+		  title: '',
+		  caption: '',
+		  contentItems: []
+	  },
       unsub : null
     }
   },
@@ -29,6 +34,21 @@ export const store = new Vuex.Store({
    getters: {
 	getPostById: (state) => (id) => {
     	return state.posts.find(post => post.id === id)
+	},
+	checkDraft: (state) => {
+		return !!state.draft.title;
 	}
-   }
+   },
+   mutations: {
+		updateDraft(state, draft) {
+			state.draft = draft;
+		},
+		emptyDraft(state) {
+			state.draft = {
+				title: '',
+				caption: '',
+				contentItems: []
+			};
+		}
+	}
 })
