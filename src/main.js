@@ -12,11 +12,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(fas)
 Vue.component("fa", FontAwesomeIcon)
 
-
 new Vue({
   store: store,
   router,
   render: (h) => h(App),
 }).$mount("#app");
-
-// TODO: add popup after user get redirected to edit videos 

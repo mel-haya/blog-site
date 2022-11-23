@@ -4,6 +4,15 @@
         <videoEditor class="col-8" v-for="item in videos" :key="item.id" :item="item" @update="updateItem"/>
         <div v-if="videos.length === 0" class="text-muted"> No videos to edit...</div>
         <button class="btn col-5 bg-success text-secondary" @click="publish">publish</button>
+        <div id="submit-popup-container" v-if="popup">
+            <div id="submit-popup-body"  class="px-4 py-3  text-secondary bg-dark">
+                <h2 class="text-danger">Submit post</h2>
+                <p>you must submit this post before creating new one.</p>   
+                <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-danger" @click="popup=false">Ok</button>
+                </div>  
+            </div>
+        </div>
     </div>
 </template>
 
@@ -22,6 +31,13 @@
             }
         },
         mounted: function() {
+            let u = this.$store.getters.getUser;
+            if(!u){
+                this.$router.push('/login');
+            }
+            else if(!u.emailVerified){
+                this.$router.push('/verifyEmail');
+            }
             if(this.$route.query.r)
                 this.popup= true
         },
@@ -60,5 +76,22 @@
 </script>
 
 <style lang="scss" scoped>
+#submit-popup-container{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background-color:rgba(0,0,0,0.5);
+}
 
+#submit-popup-body{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    border-radius:10px;
+    padding:25px;
+    border:  5px solid #333;
+}
 </style>

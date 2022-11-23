@@ -14,6 +14,11 @@ const router = new VueRouter({
       // component: () => import("../views/HomeView.vue"),
     },
     {
+      path: "/verifyEmail",
+      name: "verifyEmail",
+      component: () => import("../views/VerifyEmailView.vue"),
+    },
+    {
       path: "/dashboard",
       name: "dashboard",
       component: () => import("../views/DashboardView.vue"),
@@ -34,6 +39,11 @@ const router = new VueRouter({
       component: () => import("../views/EditVideosView.vue"),
     },
     {
+      path: "/login",
+      name: "login",
+      component: () => import("../views/LoginView.vue"),
+    },
+    {
       path: "/post/:id",
       name: "view-post",
       component: () => import("../views/ShowPostView.vue")
@@ -45,5 +55,28 @@ const router = new VueRouter({
     }
   ],
 });
+
+// import { getUser } from "@/firebase";
+
+// router.beforeEach((to, from, next) => {
+//   try{
+//     let u = getUser();
+//     if (to.name !== "login") {
+//       console.log(u)
+//       if(!u){
+//         return router.push("/login");
+//       }
+//     }
+//     next();
+//   }  
+//   catch(error){
+//     console.log(error);
+//   }
+//   // let u = getUser();
+//   // if (to.name !== "login" && !u) {
+//   //   return "/login";
+//   // }
+//   // return false
+// })
 
 export default router;

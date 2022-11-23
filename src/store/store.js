@@ -1,8 +1,8 @@
 
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { postsCollection } from '@/firebase'
-import { onSnapshot } from 'firebase/firestore'
+import { postsCollection, getUser } from '@/firebase'
+import { onSnapshot, query, where } from 'firebase/firestore'
 
 Vue.use(Vuex)
 
@@ -16,20 +16,21 @@ export const store = new Vuex.Store({
 		  caption: '',
 		  contentItems: []
 	  },
-      unsub : null
+      unsub : null,
+	  user: null
     }
   },
   actions: {
     startListner(context) {
-     context.state.unsubscribe = onSnapshot( postsCollection, (snapshot) => {
+		let q = query(postsCollection, where("author", "==", getUser().uid));
+     context.state.unsubscribe = onSnapshot( q, (snapshot) => {
         context.state.posts = snapshot.docs
-		.filter(doc => doc.id !== 'draft')
 		.map(doc => ({id: doc.id, ...doc.data()}));
       })
     },
     stopListner(context) {
         context.state.unsubscribe();
-      },
+      }
    },
    getters: {
 	getPostById: (state) => (id) => {
@@ -37,6 +38,12 @@ export const store = new Vuex.Store({
 	},
 	checkDraft: (state) => {
 		return !!state.draft.title;
+	},
+	getUser: (state) => {
+		return state.user;
+	},
+	getPosts: (state) => {
+		return state.posts;
 	}
    },
    mutations: {
@@ -49,6 +56,9 @@ export const store = new Vuex.Store({
 				caption: '',
 				contentItems: []
 			};
+		},
+		updateUser(state){
+			state.user = getUser();
 		}
 	}
 })

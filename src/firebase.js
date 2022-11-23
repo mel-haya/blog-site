@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDoc, doc, deleteDoc, addDoc,setDoc, serverTimestamp} from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
+import { getAuth,sendEmailVerification, createUserWithEmailAndPassword, updateProfile, signOut, signInWithEmailAndPassword} from "firebase/auth";
 
 
 
@@ -19,6 +20,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 const storage = getStorage(app);
+const auth = getAuth(app)
 
 export const postsCollection = collection(db,"posts");
 
@@ -58,11 +60,43 @@ export const getDraft = async() => {
 }
 
 export const publishDraft = async(post) => {
-  await addDoc(postsCollection, {...post, createdAt: serverTimestamp()});
+  await addDoc(postsCollection, {...post
+    , createdAt: serverTimestamp()
+    , author: auth.currentUser.uid});
 }
 
 export const editPost = async (id,post) => {
   const docRef = doc(db, "posts", id);
   const docSnap = await getDoc(docRef);
-  await setDoc(docRef, {...post, createdAt: docSnap.data().createdAt});
+  await setDoc(docRef, {...post});
+}
+
+export const createUser = async(email, password) =>{
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+  return userCredential.user
+}
+
+export const updateUser = async(e) => {
+  await updateProfile(auth.currentUser, e)
+}
+
+export const getUser = () => {
+  return auth.currentUser;
+}
+
+export const login = async (email, password) => {
+  try{
+    await signInWithEmailAndPassword(auth, email, password)
+  }
+  catch(err){
+    throw err;
+  }
+}
+
+export const logout = async() => {
+  await signOut(auth);
+}
+
+export const sendVerification = async() => {
+  await sendEmailVerification(auth.currentUser);
 }

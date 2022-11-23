@@ -43,6 +43,13 @@
     export default {
         name: 'DashboardView',
         mounted: function() {
+            let u = this.$store.getters.getUser;
+            if(!u){
+                this.$router.push('/login');
+            }
+            else if(!u.emailVerified){
+                this.$router.push('/verifyEmail');
+            }
             this.$store.dispatch('startListner');
         },
         destroyed: function() {
@@ -50,7 +57,7 @@
         },
         computed:{
             posts(){
-                return this.$store.state.posts.map((post) => {
+                return this.$store.getters.getPosts.map((post) => {
                     return {
                         ...post,
                         createdAt: this.toDate(post.createdAt)
