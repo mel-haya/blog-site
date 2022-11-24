@@ -31,13 +31,6 @@
             }
         },
         mounted: function() {
-            let u = this.$store.getters.getUser;
-            if(!u){
-                this.$router.push('/login');
-            }
-            else if(!u.emailVerified){
-                this.$router.push('/verifyEmail');
-            }
             if(this.$route.query.r)
                 this.popup= true
         },

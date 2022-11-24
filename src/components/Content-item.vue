@@ -5,7 +5,7 @@
             {{src}}
         </div>   
         <div v-else-if="item.type === 'image'" class="col-10">
-            <img v-if="src" :src="src" alt="" class="img-thumbnail" crossorigin/>
+            <img v-if="src" :src="src" alt="" class="img-thumbnail"/>
             <label v-else :for="`image-input-${item.id}`" class="p-4 fs-3 text-center text-muted">
                 <fa icon="images"/> Choose image
             </label>

@@ -12,7 +12,11 @@ export default {
   name: "App",
   components: {
     NavBar,
+  },
+  mounted: function (){
+    this.$store.commit('updateUser');
   }
+
 };
 
 

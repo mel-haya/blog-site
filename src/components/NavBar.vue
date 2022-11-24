@@ -46,6 +46,9 @@ export default {
             this.$store.commit('updateUser')
             this.$router.push('/login')
         }
+    },
+    mounted: function() {
+      this.$store.commit('updateUser');
     }
 }
 

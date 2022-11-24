@@ -11,15 +11,6 @@
 <script>
 import { logout } from "@/firebase"
     export default {
-        mounted: function() {
-            let u = this.$store.getters.getUser;
-            if(!u){
-                this.$router.push('/login');
-            }
-            else if(u.emailVerified){
-                this.$router.push('/dashboard');
-            }
-        },
         methods: {
             login: async function(){
                 await logout();

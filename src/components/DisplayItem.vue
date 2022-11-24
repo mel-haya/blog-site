@@ -3,7 +3,7 @@
         {{item.content}}
     </div>
     <div v-else-if="item.type === 'image'" class="w-75">
-        <img :src="item.content" alt="image" class="img-thumbnail" crossorigin>
+        <img :src="item.content" alt="image" class="img-thumbnail">
     </div>
     <div v-else-if="item.type === 'video'" class="w-75" >
         <video class="w-100" :src="`${item.content}#t=${item.start},${item.end}`" ref="video" @click="pause" @timeupdate="reset"></video>

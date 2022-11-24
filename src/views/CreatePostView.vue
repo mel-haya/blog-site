@@ -46,13 +46,6 @@
             contentItem
         },
         mounted: async function(){
-            let u = this.$store.getters.getUser;
-            if(!u){
-                this.$router.push('/login');
-            }
-            else if(!u.emailVerified){
-                this.$router.push('/verifyEmail');
-            }
             if(this.$route.params.id){
                 let post = await this.$store.getters.getPostById(this.$route.params.id);
                 this.title = post.title;

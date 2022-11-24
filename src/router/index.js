@@ -56,27 +56,19 @@ const router = new VueRouter({
   ],
 });
 
-// import { getUser } from "@/firebase";
+import { getUser } from "@/firebase";
 
-// router.beforeEach((to, from, next) => {
-//   try{
-//     let u = getUser();
-//     if (to.name !== "login") {
-//       console.log(u)
-//       if(!u){
-//         return router.push("/login");
-//       }
-//     }
-//     next();
-//   }  
-//   catch(error){
-//     console.log(error);
-//   }
-//   // let u = getUser();
-//   // if (to.name !== "login" && !u) {
-//   //   return "/login";
-//   // }
-//   // return false
-// })
+router.beforeEach((to, from, next) => {
+  let u = getUser();
+  if(to.name !== "login" && !u) {
+    router.push("/login");
+  }
+  if(to.name !== "verifyEmail" && u && !u.emailVerified) {
+    router.push("/verifyEmail");
+  }
+  else{
+    next();
+  }
+})
 
 export default router;
