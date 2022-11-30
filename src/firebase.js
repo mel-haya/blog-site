@@ -68,7 +68,7 @@ export const publishDraft = async(post) => {
 export const editPost = async (id,post) => {
   const docRef = doc(db, "posts", id);
   const docSnap = await getDoc(docRef);
-  await setDoc(docRef, {...post});
+  await setDoc(docRef, {...post, createdAt: docSnap.data().createdAt, author: docSnap.data().author});
 }
 
 export const createUser = async(email, password) =>{
